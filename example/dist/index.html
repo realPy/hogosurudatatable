@@ -1,0 +1,71 @@
+<html>  
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8"/>
+        <script src="wasm_exec.js"></script>
+        <script>
+
+
+const wasmBrowserInstantiate = async (wasmModuleUrl, importObject) => {
+  let response = undefined;
+
+  // Check if the browser supports streaming instantiation
+  if (WebAssembly.instantiateStreaming) {
+    // Fetch the module, and instantiate it as it is downloading
+    response = await WebAssembly.instantiateStreaming(
+      fetch(wasmModuleUrl),
+      importObject
+    );
+  } else {
+    // Fallback to using fetch to download the entire module
+    // And then instantiate the module
+    const fetchAndInstantiateTask = async () => {
+      const wasmArrayBuffer = await fetch(wasmModuleUrl).then(response =>
+        response.arrayBuffer()
+      );
+      return WebAssembly.instantiate(wasmArrayBuffer, importObject);
+    };
+
+    response = await fetchAndInstantiateTask();
+  }
+
+  return response;
+};
+
+const go = new Go();
+const runWasmAdd = async () => {
+  // Get the importObject from the go instance.
+  const importObject = go.importObject;
+
+  // Instantiate our wasm module
+  const wasmModule = await wasmBrowserInstantiate("datatable.wasm", importObject);
+
+  // Allow the wasm_exec go instance, bootstrap and execute our wasm module
+  go.run(wasmModule.instance);
+
+};
+runWasmAdd();
+
+        </script>
+<style>
+tbody tr:nth-child(odd) {background: rgb(255, 255, 255)}
+tbody tr:nth-child(even) {background: rgb(222, 240, 250)}
+
+</style>
+
+    </head>
+    <body>
+      <template id="custom-table"><table  style="min-width: 100%;">
+      <thead id="customthead">
+        <tr>
+          <th id="custom-table-th"><div id="custom-table-content" style="overflow: hidden;white-space: nowrap;"></div><input type="text" style="
+            width: 100%;">
+          </th>
+        </tr>
+      </thead>
+      </table>
+      </template>
+      <div id="container"></div>
+      <div id="pagination" style="width: 100%; text-align: center;"><a id="jump-left" href="">Previous</a>  <a id="jump-right" href="">Next</a></div> 
+    </body>
+</html>

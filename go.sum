@@ -1,0 +1,11 @@
+github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
+github.com/realPy/hogosuru v0.0.0-20210928105542-825fef647ae1 h1:y9lkxi+k6txhdH3+lGGkvSuv8ipdLT8lkmrKtjZp/iw=
+github.com/realPy/hogosuru v0.0.0-20210928105542-825fef647ae1/go.mod h1:AfRJhftAAT8GMt/ryNNNdDOipJk8fA/Q2z+QCsl0yOc=
+github.com/realPy/hogosuru v0.0.0-20210928105813-b7e3e4432151 h1:Wce0D2xT5fbGdhO1CESRTJpEUj1U3BpIU5rTe+JwY7w=
+github.com/realPy/hogosuru v0.0.0-20210928105813-b7e3e4432151/go.mod h1:AfRJhftAAT8GMt/ryNNNdDOipJk8fA/Q2z+QCsl0yOc=
+github.com/realPy/hogosuru v0.0.0-20210928182658-7a3209eaed82 h1:ruwJRGNVtrZxtDBrzdwUSmcl4MSk3uBaUVPbtyRpIjw=
+github.com/realPy/hogosuru v0.0.0-20210928182658-7a3209eaed82/go.mod h1:AfRJhftAAT8GMt/ryNNNdDOipJk8fA/Q2z+QCsl0yOc=
+github.com/realPy/hogosuru v0.0.1-beta h1:OMA1oYVBCXh4Bba72fks9qQcPlAFCuYItBwSApzPeGU=
+github.com/realPy/hogosuru v0.0.1-beta/go.mod h1:N0uMX+J8lYvWZLjKoCRpAXJMvkvAuwj9p1Qev8rC6QA=
+github.com/realPy/hogosuru v0.0.1-beta.0.20210921183243-3d3333f02976 h1:uAzKi75RKZVrHz8FQhZa1qOEZCMykznj7EH8HHU7b2E=
+github.com/realPy/hogosuru v0.0.1-beta.0.20210921183243-3d3333f02976/go.mod h1:AfRJhftAAT8GMt/ryNNNdDOipJk8fA/Q2z+QCsl0yOc=
