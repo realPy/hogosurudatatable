@@ -1,8 +1,11 @@
 package main
 
 import (
-	"hogosurudatatable"
+	"fmt"
 	"strconv"
+
+	"github.com/realPy/hogosurudatatable"
+	"github.com/realPy/hogosurupagination"
 
 	"github.com/realPy/hogosuru"
 	"github.com/realPy/hogosuru/document"
@@ -10,10 +13,11 @@ import (
 	"github.com/realPy/hogosuru/event"
 	"github.com/realPy/hogosuru/hogosurudebug"
 	"github.com/realPy/hogosuru/htmlanchorelement"
+	"github.com/realPy/hogosuru/htmlelement"
 	"github.com/realPy/hogosuru/htmltablecellelement"
 	"github.com/realPy/hogosuru/htmltableelement"
 	"github.com/realPy/hogosuru/htmltablesectionelement"
-	htmltemplatelement "github.com/realPy/hogosuru/htmltemplateelement"
+	"github.com/realPy/hogosuru/htmltemplateelement"
 	"github.com/realPy/hogosuru/node"
 	"github.com/realPy/hogosuru/promise"
 )
@@ -21,15 +25,13 @@ import (
 type GlobalContainer struct {
 	parentNode node.Node
 	DataTable  hogosurudatatable.DataTable
+	pagination hogosurupagination.Pagination
+	page       int
 }
 
-var template htmltemplatelement.HtmlTemplateElement
+var template htmltemplateelement.HtmlTemplateElement
 
-type CustomDataTable struct {
-	data map[string]string
-}
-
-func (c CustomDataTable) Table(d document.Document) (htmltableelement.HtmlTableElement, error) {
+func (g *GlobalContainer) Table(d document.Document) (htmltableelement.HtmlTableElement, error) {
 	var t htmltableelement.HtmlTableElement
 	var err error
 	if t, err = htmltableelement.New(d); hogosuru.AssertErr(err) {
@@ -39,7 +41,7 @@ func (c CustomDataTable) Table(d document.Document) (htmltableelement.HtmlTableE
 	return t, err
 }
 
-func (c CustomDataTable) Thead(d document.Document) (htmltablesectionelement.HtmlTableSectionElement, error) {
+func (g *GlobalContainer) Thead(d document.Document) (htmltablesectionelement.HtmlTableSectionElement, error) {
 	var thead htmltablesectionelement.HtmlTableSectionElement
 	var err error
 
@@ -50,7 +52,7 @@ func (c CustomDataTable) Thead(d document.Document) (htmltablesectionelement.Htm
 	return thead, err
 }
 
-func (c CustomDataTable) Tbody(d document.Document) (htmltablesectionelement.HtmlTableSectionElement, error) {
+func (g *GlobalContainer) Tbody(d document.Document) (htmltablesectionelement.HtmlTableSectionElement, error) {
 	var tbody htmltablesectionelement.HtmlTableSectionElement
 	var err error
 
@@ -61,19 +63,20 @@ func (c CustomDataTable) Tbody(d document.Document) (htmltablesectionelement.Htm
 	return tbody, err
 }
 
-func (c CustomDataTable) Columns() int {
+func (g *GlobalContainer) Columns() int {
 
 	return 3
 }
-func (c CustomDataTable) Rows() int {
+func (g *GlobalContainer) Rows() int {
 	return 53
 }
 
-func (c CustomDataTable) MaxRowsByPage() int {
+func (g *GlobalContainer) MaxRowsByPage() int {
 	return 10
 }
 
-func (c CustomDataTable) LoadData() *promise.Promise {
+func (g *GlobalContainer) LoadData() *promise.Promise {
+
 	/*
 		p, _ := promise.SetTimeout(func() (interface{}, error) {
 			println("Data loaded")
@@ -83,7 +86,7 @@ func (c CustomDataTable) LoadData() *promise.Promise {
 	return nil
 }
 
-func (c CustomDataTable) Cell(d document.Document, indexRow, indexColumn int) (htmltablecellelement.HtmlTableCellElement, error) {
+func (g *GlobalContainer) Cell(d document.Document, indexRow, indexColumn int) (htmltablecellelement.HtmlTableCellElement, error) {
 
 	var td htmltablecellelement.HtmlTableCellElement
 	var err error
@@ -99,7 +102,7 @@ func (c CustomDataTable) Cell(d document.Document, indexRow, indexColumn int) (h
 	return td, err
 }
 
-func (c CustomDataTable) Head(d document.Document, indexColumn int) (htmltablecellelement.HtmlTableCellElement, error) {
+func (g *GlobalContainer) Head(d document.Document, indexColumn int) (htmltablecellelement.HtmlTableCellElement, error) {
 	var th htmltablecellelement.HtmlTableCellElement
 	var err error
 
@@ -133,7 +136,7 @@ func (c CustomDataTable) Head(d document.Document, indexColumn int) (htmltablece
 func (w *GlobalContainer) OnLoad(d document.Document, n node.Node, route string) (*promise.Promise, []hogosuru.Rendering) {
 
 	w.parentNode = n
-	htmltemplatelement.GetInterface()
+	htmltemplateelement.GetInterface()
 	documentfragment.GetInterface()
 	htmltablecellelement.GetInterface()
 	htmlanchorelement.GetInterface()
@@ -142,7 +145,7 @@ func (w *GlobalContainer) OnLoad(d document.Document, n node.Node, route string)
 
 		if elem, err := elem.Discover(); hogosuru.AssertErr(err) {
 
-			if t, ok := elem.(htmltemplatelement.HtmlTemplateElement); ok {
+			if t, ok := elem.(htmltemplateelement.HtmlTemplateElement); ok {
 				template = t
 			}
 		}
@@ -150,67 +153,98 @@ func (w *GlobalContainer) OnLoad(d document.Document, n node.Node, route string)
 	}
 
 	//if no promise return we dont wait all childs to append
-	w.DataTable.Data = CustomDataTable{}
+	w.DataTable.Data = w
 	w.DataTable.InitialCurrentPage = 0
 	w.DataTable.FieldEmptyLine = true
+	w.page = 6
+	w.pagination.IDPatternElem = "item-pattern"
+	w.pagination.IDTemplate = "pagination-tpl"
 
-	if a, err := d.GetElementById("jump-right"); hogosuru.AssertErr(err) {
-		if a, err := a.Discover(); hogosuru.AssertErr(err) {
+	w.pagination.OnConfigureItem = func(elem htmlelement.HtmlElement, page int) {
 
-			if alink, ok := a.(htmlanchorelement.HtmlAnchorElement); ok {
-				alink.OnClick(func(e event.Event) {
+		if link, err := elem.QuerySelector("#link-pattern"); hogosuru.AssertErr(err) {
 
-					w.DataTable.Jump(w.DataTable.CurrentPage() + 1)
+			if aobj, err := link.Discover(); hogosuru.AssertErr(err) {
 
-					e.PreventDefault()
-				})
+				if a, ok := aobj.(htmlanchorelement.HtmlAnchorElement); ok {
 
+					if page >= 0 {
+
+						a.SetTextContent(fmt.Sprintf("%d", page+1))
+
+						a.OnClick(func(e event.Event) {
+							w.pagination.Select(elem, page)
+
+							w.DataTable.Jump(page)
+							e.PreventDefault()
+
+						})
+					} else {
+						a.SetTextContent("...")
+					}
+
+				}
 			}
+
 		}
+
+		w.pagination.OnSelectItem = func(elem htmlelement.HtmlElement) {
+			class, _ := elem.ClassName()
+			elem.SetClassName(class + " selected")
+		}
+
+		/*
+			if page >= 0 {
+
+				a.SetTextContent(fmt.Sprintf("%d", page+1))
+				a.OnClick(func(e event.Event) {
+					w.pagination.Select(page)
+
+					w.DataTable.Jump(page)
+					e.PreventDefault()
+
+				})
+			} else {
+				a.SetTextContent("...")
+			}
+		*/
 
 	}
 
-	if a, err := d.GetElementById("jump-left"); hogosuru.AssertErr(err) {
-		if a, err := a.Discover(); hogosuru.AssertErr(err) {
-
-			if alink, ok := a.(htmlanchorelement.HtmlAnchorElement); ok {
-				alink.OnClick(func(e event.Event) {
-
-					w.DataTable.Jump(w.DataTable.CurrentPage() - 1)
-
-					e.PreventDefault()
-				})
-
-			}
-		}
-
-	}
-
-	return nil, []hogosuru.Rendering{&w.DataTable}
+	return nil, []hogosuru.Rendering{&w.DataTable, &w.pagination}
 }
 
 func (w *GlobalContainer) Node(r hogosuru.Rendering) node.Node {
+
+	if r == &w.pagination {
+		if d, err := document.New(); hogosuru.AssertErr(err) {
+
+			if elem, err := d.GetElementById("pagination"); hogosuru.AssertErr(err) {
+				return elem.Node
+			}
+
+		}
+	}
+
+	if r == &w.DataTable {
+		if d, err := document.New(); hogosuru.AssertErr(err) {
+
+			if elem, err := d.GetElementById("container"); hogosuru.AssertErr(err) {
+				return elem.Node
+			}
+
+		}
+	}
 
 	return w.parentNode
 }
 
 func (w *GlobalContainer) OnEndChildRendering(r hogosuru.Rendering) {
 
-	if r == &w.DataTable {
-		if d, err := document.New(); hogosuru.AssertErr(err) {
-
-			if elem, err := d.GetElementById("container"); hogosuru.AssertErr(err) {
-				elem.AppendChild(r.Node(r))
-			}
-
-		}
-	}
-
 }
 
 func (w *GlobalContainer) OnEndChildsRendering() {
-
-	//w.parentNode.AppendChild(tree)
+	w.pagination.SetMax(w.page)
 }
 
 func (w *GlobalContainer) OnUnload() {

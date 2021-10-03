@@ -1,0 +1,18 @@
+
+docker run --rm -it -w /go/src/hogosurudatatable -v "$PWD":/go/src/hogosurudatatable tinygo/tinygo bash
+
+# in container:
+apt-get install -y curl 
+
+# Get the last hogosuru stable syscall 
+
+curl https://raw.githubusercontent.com/realPy/hogosuru/main/hogosuru/hogosuru.go -o /usr/local/go/src/syscall/js/hogosuru.go
+
+# Get the hogosuru framework 
+cd example
+
+GOOS=js GOARCH=wasm go get
+
+
+tinygo build  --no-debug -target wasm  -o dist/datatable.wasm main.go
+
