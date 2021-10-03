@@ -7,3 +7,5 @@ require (
 	github.com/realPy/hogosurudatatable v0.0.0-20211003094856-5e8adab26306
 	github.com/realPy/hogosurupagination v0.0.0-20211003111523-38910cb2fbba
 )
+
+replace github.com/realPy/hogosurudatatable => ../
