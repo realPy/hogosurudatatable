@@ -5,3 +5,5 @@ github.com/realPy/hogosurudatatable v0.0.0-20211003094856-5e8adab26306 h1:dK/1rg
 github.com/realPy/hogosurudatatable v0.0.0-20211003094856-5e8adab26306/go.mod h1:4jNWa70SkCqdYNEpo3RMt1x9+QpOcHNS/3xSe22Eykc=
 github.com/realPy/hogosurupagination v0.0.0-20211003091418-5e23d85edd28 h1:SQwfmdqvic/oDtVN1VSel9bayU7dppJBXbgvMUzoXhA=
 github.com/realPy/hogosurupagination v0.0.0-20211003091418-5e23d85edd28/go.mod h1:uXLD2jXy8UsM06u9wAhwuMpbFBUYHdWSlR9krs4cV+Q=
+github.com/realPy/hogosurupagination v0.0.0-20211003111523-38910cb2fbba h1:AcFtJh4OBVmWjj6bCv+Slfj5zv2F846iqBsFnw+zDig=
+github.com/realPy/hogosurupagination v0.0.0-20211003111523-38910cb2fbba/go.mod h1:uXLD2jXy8UsM06u9wAhwuMpbFBUYHdWSlR9krs4cV+Q=
