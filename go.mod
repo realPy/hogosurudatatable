@@ -1,4 +1,4 @@
-module github.com/realPy/hogosurudatable
+module github.com/realPy/hogosurudatatable
 
 go 1.16
 
