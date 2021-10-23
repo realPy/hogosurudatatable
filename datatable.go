@@ -108,16 +108,12 @@ func (t *DataTable) refreshData(page int) {
 
 	if t.loadPromise == nil {
 		if d, err := document.New(); hogosuru.AssertErr(err) {
-			p, _ := promise.New(func() (interface{}, error) {
 
-				waitingData := t.Data.LoadData()
-				var err error
+			waitingData := t.Data.LoadData()
+			if waitingData != nil {
+				t.loadPromise = waitingData
 
-				if waitingData != nil {
-					_, err = waitingData.Await()
-				}
-
-				if waitingData == nil && err == nil {
+				waitingData.Then(func(i interface{}) *promise.Promise {
 					var nbrow int = t.Data.Rows()
 					var nbRowByPage = t.Data.MaxRowsByPage()
 					var begin, end, currentpage int
@@ -184,13 +180,16 @@ func (t *DataTable) refreshData(page int) {
 						}
 
 					}
-				}
-				return nil, nil
-			})
-			t.loadPromise = &p
-			t.loadPromise.Finally(func() {
-				t.loadPromise = nil
-			})
+
+					return nil
+				}, nil)
+
+				t.loadPromise.Finally(func() {
+					t.loadPromise = nil
+				})
+			} else {
+				hogosuru.AssertErr(errors.New("LoadData must return a promise"))
+			}
 
 		}
 	} else {

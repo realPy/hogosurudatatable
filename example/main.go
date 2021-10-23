@@ -83,7 +83,9 @@ func (g *GlobalContainer) LoadData() *promise.Promise {
 			return nil, nil
 		}, 500)
 	return &p*/
-	return nil
+
+	p, _ := promise.Resolve(nil)
+	return &p
 }
 
 func (g *GlobalContainer) Cell(d document.Document, indexRow, indexColumn int) (htmltablecellelement.HtmlTableCellElement, error) {
@@ -252,7 +254,7 @@ func (w *GlobalContainer) OnUnload() {
 }
 
 func main() {
-
+	hogosuru.Init()
 	hogosurudebug.EnableDebug()
 	hogosuru.Router().DefaultRendering(&GlobalContainer{})
 	hogosuru.Router().Start(hogosuru.HASHROUTE)

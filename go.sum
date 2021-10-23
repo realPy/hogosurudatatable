@@ -1,2 +1,7 @@
+github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/realPy/hogosuru v0.0.0-20211001183015-34135387b48e h1:uZgi97XN2MMbNao/1aLiCI3UxsWmh729utONWsKzSYI=
 github.com/realPy/hogosuru v0.0.0-20211001183015-34135387b48e/go.mod h1:AfRJhftAAT8GMt/ryNNNdDOipJk8fA/Q2z+QCsl0yOc=
+github.com/realPy/hogosuru v1.0.0-rc5.0.20211023094013-8147e79641b8 h1:/c+kdaCfQunLqD2UfrQIdgbYj+XcDPPulDZnyfFhQKo=
+github.com/realPy/hogosuru v1.0.0-rc5.0.20211023094013-8147e79641b8/go.mod h1:AfRJhftAAT8GMt/ryNNNdDOipJk8fA/Q2z+QCsl0yOc=
+github.com/realPy/hogosurupagination v0.0.0-20211023102613-9b7c22457294 h1:SMQ24GAf/VpTbGVUIFc8jz5c3zorOwBgygCcW+DvEwE=
+github.com/realPy/hogosurupagination v0.0.0-20211023102613-9b7c22457294/go.mod h1:mfylLB5dT4eovIjg9C9ka3SKHoR6jcExOffkjNIxA/c=
